@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const {dbConnection} = require('./../database/config');
 
 class Server{
     constructor(){
@@ -8,13 +9,21 @@ class Server{
         // Colocando la ruta de esta manera, es más ordenado y prolijo la detección de las rutas
         this.usersRoutePath = '/api/users';
 
+        // Conectar a base de datos 
+        this.connectDB();
+
         // Middlewere, funciones que añadira otras funcionalidades al webserver
         this.middlewares();
         
         // Rutas de app
         this.routes();
+
     }
 
+    async connectDB(){
+        await dbConnection();
+    }
+    
     // use es la  palabra clave para determinar que es un middleware
     middlewares(){
 
