@@ -2,6 +2,7 @@
 const {response, request} = require('express');
 const bcryptjs = require('bcryptjs');
 const User = require('./../models/user');
+const { validationResult } = require('express-validator');
 
 const getUsers = (req = request, res = response) =>{
     // Obtener queryParams
@@ -17,6 +18,13 @@ const getUsers = (req = request, res = response) =>{
 }
 
 const postUsers = async (req, res = response) =>{
+
+    // errores del middlewere
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json(errors);
+    }
+
     // Recibir la info del body
     const {nombre, correo, password, rol} = req.body;
 
@@ -24,7 +32,12 @@ const postUsers = async (req, res = response) =>{
     const user = new User({nombre, correo, password, rol});
 
     // Verificar si el correo existe
-
+    const existEmail = await User.findOne({correo});
+    if(existEmail){
+        return res.status(400).json({
+            msg: 'El correo ya está registrado',
+        })
+    }
 
     // Encriptar la contraseña
     // el saltSync es para estabelcer el numero de vueltas que dara la encriptación (a mayor número, más complicado de desencriptar)
