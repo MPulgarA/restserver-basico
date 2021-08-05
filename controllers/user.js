@@ -2,34 +2,32 @@
 const {response, request} = require('express');
 const bcryptjs = require('bcryptjs');
 const User = require('./../models/user');
-const { validationResult } = require('express-validator');
 
-const getUsers = (req = request, res = response) =>{
+
+const getUsers = async (req = request, res = response) =>{
     // Obtener queryParams
-    const {q, nombre = "No Name", apiKey, page=1, limit=10} = req.query;
+    // const {q, nombre = "No Name", apiKey, page=1, limit=10} = req.query;
+
+    const {limit = 5, from =  0} = req.query;
+    // Get de todos los usuarios
+    const users = await User.find()
+                            .skip(Number(from))
+                            .limit(Number(limit));
+
     res.json({
-        "msg": "Get API Controller",
-        q,
-        nombre,
-        apiKey,
-        page, 
-        limit
+       users
     });
 }
 
 const postUsers = async (req, res = response) =>{
-
-    // errores del middlewere
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return res.status(400).json(errors);
-    }
-
     // Recibir la info del body
     const {nombre, correo, password, rol} = req.body;
 
     // Esta es la creación de la instancia, para grabar el registro en mongo es
     const user = new User({nombre, correo, password, rol});
+
+    // Crear una validacion personalizada de express validator
+
 
     // Verificar si el correo existe
     const existEmail = await User.findOne({correo});
@@ -49,17 +47,28 @@ const postUsers = async (req, res = response) =>{
 
     await user.save();
 
+    // toJSON que envia los datos modificados en el models de user
     res.json({
-        "msg": "Post",
         user
     });
 }
 
-const putUsers = (req, res = response) =>{
+const putUsers = async (req, res = response) =>{
     const {id}= req.params;
+    const {_id, password, google, correo, ...rest} = req.body;
+
+    // TODO Validar contra DB
+    if(password){
+        // Desea actualizar su contraseña, se debe volver a realizar el hash
+        const salt = bcryptjs.genSaltSync(10);
+        rest.password = bcryptjs.hashSync(password, salt);
+    }
+
+    // Actualizar el registro
+    const user = await User.findByIdAndUpdate(id, rest);
+
     res.json({
-        "msg": "Put controller", 
-        id
+        user
     });
 }
 

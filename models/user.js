@@ -36,4 +36,13 @@ const UserSchema = Schema({
     }
 });
 
+// Aca crearemos metodos personalizados o sobreecribir metodos la generados
+UserSchema.methods.toJSON = function(){
+    // Destructuring de la instacia de User
+    // Sacar datos clases, sacando la version y la password y todos los demas seran almacenados en user
+    // De esta forma en la respuesta del server donde se regresan los datos de usuario, no estara la versión  ni la contraseña
+    const {__v, password, ...user} = this.toObject();
+    return user;
+}
+
 module.exports = model('Users', UserSchema);
