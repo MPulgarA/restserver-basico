@@ -41,7 +41,8 @@ UserSchema.methods.toJSON = function(){
     // Destructuring de la instacia de User
     // Sacar datos clases, sacando la version y la password y todos los demas seran almacenados en user
     // De esta forma en la respuesta del server donde se regresan los datos de usuario, no estara la versión  ni la contraseña
-    const {__v, password, ...user} = this.toObject();
+    const {__v, password, _id, ...user} = this.toObject();
+    user.uid = _id;
     return user;
 }
 

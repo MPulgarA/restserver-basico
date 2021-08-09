@@ -6,6 +6,7 @@ const { getUsers,
         putUsers,
         postUsers,
         deleteUsers } = require('./../controllers/user');
+const { validateJWT } = require('../middlewares/validate-jwt');
 const {validateFields} = require('./../middlewares/validate-fields');
 
 const router = Router();
@@ -40,7 +41,10 @@ router.post('/',[
     validateFields
 ], postUsers);
 
+// Proteger la ruta si no se tiene un JWT validator
+// Validaciones de manera secuencial con next
 router.delete('/:id',[
+    validateJWT,
     check('id', 'No es un ID valido').isMongoId(),
     check('id').custom(existUserById), 
     validateFields

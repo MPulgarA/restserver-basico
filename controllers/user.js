@@ -79,18 +79,19 @@ const putUsers = async (req, res = response) => {
 
 const deleteUsers = async (req, res = response) =>{
     const {id} = req.params;
+    const uid = req.uid;
 
+    console.log(uid);
     // Borrado fisico
     // const user = await User.findByIdAndDelete(id);
 
     // Borrado logico
     const user = await User.findByIdAndUpdate(id, {estado: false});
 
-
     res.json({
-        "msg": "Delete controller",
         id, 
-        user
+        user,
+        uid
     });
 }
 
