@@ -1,5 +1,6 @@
 const {response, request} = require('express');
 const jwt = require('jsonwebtoken');
+const User = require('./../models/user');
 
 const validateJWT = async(req = request, res = response, next) =>{
     // Obtener el JWT desde los headers
@@ -17,7 +18,24 @@ const validateJWT = async(req = request, res = response, next) =>{
         // Esta funcion sirve para validar el jwt, si este no es vaido, gatillara un throw new error
         const { uid } = jwt.verify( token, process.env.SECRETORPRIVATEKEY );
         
-        req.uid = uid;
+        
+        // Leer el usuario que corresponde al uid
+        const userAutenticate = await User.findById(uid); 
+        if(!userAutenticate){
+            return res.status(401).json({
+                msg: 'Token no valido - usuario no existe en DB'
+            });
+        }
+        
+        // Verificar si el uid tiene estado en true
+        if(!userAutenticate.estado){
+            return res.status(401).json({
+                msg: 'Token no valido - usuario con estado false'
+            });
+        }
+
+
+        req.userAutenticate = userAutenticate;
 
         next();
     } catch (error) {

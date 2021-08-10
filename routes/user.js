@@ -6,8 +6,10 @@ const { getUsers,
         putUsers,
         postUsers,
         deleteUsers } = require('./../controllers/user');
+
 const { validateJWT } = require('../middlewares/validate-jwt');
 const {validateFields} = require('./../middlewares/validate-fields');
+const { isAdminRol, hasRole } = require('../middlewares/validate-rol');
 
 const router = Router();
 
@@ -45,6 +47,9 @@ router.post('/',[
 // Validaciones de manera secuencial con next
 router.delete('/:id',[
     validateJWT,
+    // isAdminRol,
+    // Middlewere que acepte un usuario con varios roles, o cualquiera de los roles establecidos
+    hasRole('ADMIN_ROL','VENTA_ROL'),
     check('id', 'No es un ID valido').isMongoId(),
     check('id').custom(existUserById), 
     validateFields
