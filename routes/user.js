@@ -7,9 +7,12 @@ const { getUsers,
         postUsers,
         deleteUsers } = require('./../controllers/user');
 
-const { validateJWT } = require('../middlewares/validate-jwt');
-const {validateFields} = require('./../middlewares/validate-fields');
-const { isAdminRol, hasRole } = require('../middlewares/validate-rol');
+        
+// Middleweres
+const {validateJWT, validateFields, isAdminRol, hasRole} = require('./../middlewares');
+// const { validateJWT } = require('../middlewares/validate-jwt');
+// const {validateFields} = require('./../middlewares/validate-fields');
+// const { isAdminRol, hasRole } = require('../middlewares/validate-rol');
 
 const router = Router();
 
