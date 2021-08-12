@@ -22,6 +22,7 @@ const UserSchema = Schema({
     rol:{
         type: String,
         required: true,
+        default: 'USER-ROLE',
         // Permite solamente estos roles
         emun: ['ADMIN_ROLE', 'USER_ROLE']
     },
