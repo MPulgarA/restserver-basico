@@ -37,7 +37,7 @@ const UserSchema = Schema({
     }
 });
 
-// Aca crearemos metodos personalizados o sobreecribir metodos la generados
+// Aca crearemos metodos personalizados o sobreecribir metodos la generadosb
 UserSchema.methods.toJSON = function(){
     // Destructuring de la instacia de User
     // Sacar datos clases, sacando la version y la password y todos los demas seran almacenados en user

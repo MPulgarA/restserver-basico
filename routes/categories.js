@@ -1,20 +1,24 @@
 const { Router } = require('express');
 const {check} = require('express-validator');
 const { validateJWT, validateFields } = require('../middlewares');
-const {postCategory} = require('./../controllers/categories');
+const {postCategory, deleteCategory} = require('./../controllers/categories');
 
+
+//Crear un middlewere personalizado para validar el id de la categoria 
+// Para todas lasrutas que tiene el id, se les debe implementar el middlewere personaliz
+// existeCategoria check('id').custom(existeCategoria) 
 
 const router = Router();
 
 // Todas las categorias public
-router.get('/', (req, res)=>{
-    res.json('Todo Bien get');
-});
+router.get('/',[
+    
+],);
 
 // Una categoria por id public
-router.get('/:id', (req, res) =>{
-    res.json('Todo Bien get id');
-});
+router.get('/:id',[
+
+],);
 
 // Crear categoria - privado
 router.post('/',[
@@ -24,14 +28,14 @@ router.post('/',[
 ], postCategory);
 
 // Actualizar registro por id
-router.put('/:id', (req, res) =>{
-    res.json('Todo Bien put');
-});
+router.put('/:id',[
 
-// Admin
-router.delete('/:id', (req, res) =>{
-    res.json('Todo Bien delete');
-});
+],);
+
+// Eliminar categoria solo si eres admin
+router.delete('/:id',[
+
+],deleteCategory);
 
 
 
