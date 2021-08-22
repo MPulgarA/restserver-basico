@@ -2,20 +2,48 @@ const {request, response} = require('express');
 const {Category} = require('./../models');
 
 
-
+// NOTE Populate 
 // Obtener categorias - paginado y opcional - cuantas categorias tiene - populateMongoose
 // Mediante el populate, las relaciones de fk salen de manera más concisa y con más información
 const getCategories = async (req, res = response) =>{
-    const {} = req.query;
+    const {limit = 5, from = 0} = req.query;
+    const query = {estado : true};
+
+    const [total, category] = await Promise.all([
+        Category.countDocuments(query),
+        Category.find(query)
+            .skip(Number(from))
+            .limit(Number(limit))
+            .populate("usuario", {nombre : 1}),
+    ]);
+
+    res.json({
+        total,
+        category,
+    });
 }
 
 // Obtener categoria - populate {objetoCategoria}
 const getCategory = async (req, res= response) =>{
+    const {id} = req.params; 
+    const category = await Category.findById(id).populate('usuario', "nombre");
 
+    res.json(category);
+    
 }
 
 // Actualizar categoria (nombre)
+const putCategory = async (req, res = response) => {
+    const {id} = req.params;
+    const nombre = req.body.nombre.toUpperCase();
 
+    const category = await Category.findOneAndUpdate(id, nombre);
+
+    res.json({
+        category 
+    });
+
+}
 
 // Borrar categoria Borrado logico
 const deleteCategory = async (req, res = response) =>{
@@ -53,10 +81,12 @@ const postCategory = async (req, res= response) =>{
 
     // 201 estado de creación
     res.status(201).json(category);
-
 }
 
 module.exports = {
+    getCategories,
+    getCategory,
+    putCategory,
     postCategory,
     deleteCategory,
 }

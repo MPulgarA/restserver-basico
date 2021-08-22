@@ -36,6 +36,7 @@ const postUsers = async (req, res = response) => {
 
     // Verificar si el correo existe
     const existEmail = await User.findOne({ correo });
+    
     if (existEmail) {
         return res.status(400).json({
             msg: 'El correo ya está registrado',

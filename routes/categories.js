@@ -1,7 +1,14 @@
 const { Router } = require('express');
-const {check} = require('express-validator');
-const { validateJWT, validateFields } = require('../middlewares');
-const {postCategory, deleteCategory} = require('./../controllers/categories');
+const { check } = require('express-validator');
+
+const { existCategoryByID } = require('./../helpers/db-validators');
+
+const { getCategories,
+    getCategory,
+    postCategory,
+    deleteCategory } = require('./../controllers/categories');
+
+const { validateJWT, validateFields, hasRole } = require('../middlewares');
 
 
 //Crear un middlewere personalizado para validar el id de la categoria 
@@ -11,31 +18,36 @@ const {postCategory, deleteCategory} = require('./../controllers/categories');
 const router = Router();
 
 // Todas las categorias public
-router.get('/',[
-    
-],);
+router.get('/', getCategories);
 
 // Una categoria por id public
-router.get('/:id',[
-
-],);
+router.get('/:id', [
+    check('id').custom(existCategoryByID),
+    check('id', 'No es un ID valido').isMongoId(),
+    validateFields
+], getCategory);
 
 // Crear categoria - privado
-router.post('/',[
+router.post('/', [
     validateJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     validateFields,
 ], postCategory);
 
-// Actualizar registro por id
-router.put('/:id',[
-
-],);
+// Actualizar registro por id - privado
+router.put('/:id', [
+    validateJWT,
+    check('id').custom(existCategoryByID),
+    validateFields,
+]);
 
 // Eliminar categoria solo si eres admin
-router.delete('/:id',[
-
-],deleteCategory);
+router.delete('/:id', [
+    validateJWT,
+    hasRole('ADMIN_ROL'),
+    check('id').custom(existCategoryByID),
+    validateFields
+], deleteCategory);
 
 
 
