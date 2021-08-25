@@ -7,10 +7,12 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
 
-        this.paths={
+        this.paths = {
             auth: '/api/auth',
             category: '/api/categories',
             users: '/api/users',
+            products: '/api/products',
+            search: '/api/search',
         }
 
         // Colocando la ruta de esta manera, es más ordenado y prolijo la detección de las rutas
@@ -52,13 +54,19 @@ class Server {
 
     routes() {
         // En user no es necesario tener la ruta general, solo la ruta raiz, debido a que routes establece la ruta a utilizar
-        this.app.use(this.paths.auth, require('../routes/auth'));
+        this.app.use(this.paths.auth, require('./../routes/auth'));
 
         // Route auth
-        this.app.use(this.paths.users, require('../routes/user'));
+        this.app.use(this.paths.users, require('./../routes/user'));
 
         // Categories 
-        this.app.use(this.paths.category, require('../routes/categories'));
+        this.app.use(this.paths.category, require('./../routes/categories'));
+
+        // Products
+        this.app.use(this.paths.products, require('./../routes/products'));
+
+        // Search
+        this.app.use(this.paths.search, require('./../routes/search'));
     }
 
     listen() {

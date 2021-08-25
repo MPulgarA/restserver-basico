@@ -72,7 +72,6 @@ const postCategory = async (req, res= response) =>{
         });
     }
 
-    console.log(req.userAutenticate);
     // Generar la data a guardar 
     const data = { 
         nombre,
