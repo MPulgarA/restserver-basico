@@ -14,7 +14,7 @@ const getCategories = async (req, res = response) =>{
         Category.find(query)
             .skip(Number(from))
             .limit(Number(limit))
-            .populate("usuario", {nombre : 1}),
+            .populate("usuario", "nombre"),
     ]);
 
     res.json({
@@ -23,9 +23,10 @@ const getCategories = async (req, res = response) =>{
     });
 }
 
+
 // Obtener categoria - populate {objetoCategoria}
 const getCategory = async (req, res= response) =>{
-    const {id} = req.params; 
+    const { id } = req.params; 
     const category = await Category.findById(id).populate('usuario', "nombre");
 
     res.json(category);
@@ -35,21 +36,25 @@ const getCategory = async (req, res= response) =>{
 // Actualizar categoria (nombre)
 const putCategory = async (req, res = response) => {
     const {id} = req.params;
-    const nombre = req.body.nombre.toUpperCase();
 
-    const category = await Category.findOneAndUpdate(id, nombre);
+    // Extraer el estado y usuario en caso de que se quiera pasar tales parametros para la actualizacion
+    const {estado, userAutenticate, ...data} = req.body;
+    data.nombre = data.nombre.toUpperCase();
+    data.userAutenticate = req.userAutenticate._id;
+    // req.userAutenticate._id
+
+    const category = await Category.findByIdAndUpdate(id, data, {new : true});
 
     res.json({
         category 
     });
-
 }
 
 // Borrar categoria Borrado logico
 const deleteCategory = async (req, res = response) =>{
     // Obtener el id de la categoria
-    const {id}= req.params;
-    const category = await Category.findByIdAndUpdate(id, {estado: false});
+    const { id } = req.params;
+    const category = await Category.findByIdAndUpdate(id, {estado: false}, {new: true});
 
     res.json({
         category

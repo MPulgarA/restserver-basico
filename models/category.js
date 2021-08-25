@@ -19,6 +19,7 @@ const CategorySchema = Schema({
 });
 
 CategorySchema.methods.toJSON = function(){
+    // Destructurar para sacar la versión y el estado de la categoria
     const {__v, estado,...category} = this.toObject();
     return category;
 }

@@ -4,11 +4,12 @@ const { check } = require('express-validator');
 const { existCategoryByID } = require('./../helpers/db-validators');
 
 const { getCategories,
-    getCategory,
-    postCategory,
-    deleteCategory } = require('./../controllers/categories');
+        getCategory,
+        postCategory,
+        deleteCategory, 
+        putCategory } = require('./../controllers/categories');
 
-const { validateJWT, validateFields, hasRole } = require('../middlewares');
+const { validateJWT, validateFields, isAdminRol } = require('../middlewares');
 
 
 //Crear un middlewere personalizado para validar el id de la categoria 
@@ -23,8 +24,8 @@ router.get('/', getCategories);
 // Una categoria por id public
 router.get('/:id', [
     check('id').custom(existCategoryByID),
-    check('id', 'No es un ID valido').isMongoId(),
-    validateFields
+    validateFields,
+    check('id', 'No es un ID de mongo valido').isMongoId(),
 ], getCategory);
 
 // Crear categoria - privado
@@ -37,14 +38,16 @@ router.post('/', [
 // Actualizar registro por id - privado
 router.put('/:id', [
     validateJWT,
+    check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('id').custom(existCategoryByID),
     validateFields,
-]);
+], putCategory);
 
 // Eliminar categoria solo si eres admin
 router.delete('/:id', [
     validateJWT,
-    hasRole('ADMIN_ROL'),
+    isAdminRol,
+    check('id', 'No es un ID de mongo valido').isMongoId(),
     check('id').custom(existCategoryByID),
     validateFields
 ], deleteCategory);
