@@ -5,6 +5,7 @@ const uploadFile = ( files, validExtension = ['png', 'jpg', 'jpeg', 'gif'], fold
 
     return new Promise((resolve, reject) => {
 
+    
         const { file } = files;
         // Leer la extensión del archivo y restringir la subida de estos
         const splitName = file.name.split('.');
