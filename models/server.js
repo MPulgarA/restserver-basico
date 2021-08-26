@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { dbConnection } = require('./../database/config');
+const fileUpload = require('express-fileupload');
 
 class Server {
     constructor() {
@@ -13,6 +14,7 @@ class Server {
             users: '/api/users',
             products: '/api/products',
             search: '/api/search',
+            uploads: '/api/uploads',
         }
 
         // Colocando la ruta de esta manera, es más ordenado y prolijo la detección de las rutas
@@ -50,6 +52,14 @@ class Server {
         // Lectura y parseo de body
         // Con esto cualquier información de tipo JSON que venga en un post put y delete, la información la intentara serializar en un formato JSON
         this.app.use(express.json());
+
+        // Fileupload carga de archivos, cualquier archivo
+        this.app.use(fileUpload({
+            useTempFiles: true,
+            tempFileDir: '/tmp/',
+            // Configuración para crear una carpeta en caso de que no exista
+            createParentPath: true
+        }));
     }
 
     routes() {
@@ -67,6 +77,9 @@ class Server {
 
         // Search
         this.app.use(this.paths.search, require('./../routes/search'));
+
+        // Upload
+        this.app.use(this.paths.uploads, require('./../routes/upload'));
     }
 
     listen() {
