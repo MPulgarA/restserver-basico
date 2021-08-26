@@ -3,6 +3,7 @@ const fs = require('fs');
 const { response } = require('express');
 const { uploadFile } = require('./../helpers');
 
+
 const { User, Product } = require('./../models');
 
 const fileUpload = async (req, res = response) => {
@@ -49,10 +50,10 @@ const updateImg = async (req, res = response) => {
 
 
     // Limpieza imagenes previas
-    if(model.img){
+    if (model.img) {
         // Borrar la imagen del servidor
         const imgPath = path.join(__dirname, '../uploads', collection, model.img);
-        if(fs.existsSync(imgPath)){
+        if (fs.existsSync(imgPath)) {
             // Borrado de la imagen en base a todas las condiciones establecidas con anteriorirdad
             fs.unlinkSync(imgPath);
         }
@@ -70,7 +71,52 @@ const updateImg = async (req, res = response) => {
     }
 }
 
+const showImg = async (req, res = response) => {
+    const { id, collection } = req.params;
+
+    let model;
+    switch (collection) {
+        case 'users':
+            model = await User.findById(id);
+            if (!model) {
+                // retornar un placeholder
+                return res.status(400).json({
+                    msg: `No existe un usuario con el id ${id}`,
+                });
+            }
+            break;
+
+        case 'products':
+            model = await Product.findById(id);
+            if (!model) {
+                // retornar un placeholder
+                return res.status(400).json({
+                    msg: `No existe un producto con el id ${id}`,
+                });
+            }
+            break;
+
+        default:
+            return res.status(500).json({ msg: 'Esta parte no funciona jeje' });
+    };
+
+
+    if (model.img) {
+        const imgPath = path.join(__dirname, '../uploads/', collection, model.img);
+        if (fs.existsSync(imgPath)) {
+            // Mostrar la imagen
+            return res.sendFile(imgPath);
+        }
+    }
+
+
+    // Construir el path de la imagen placeholder
+    const imgPath = path.join(__dirname, './../assets/no-image.jpg');
+    return res.sendFile(imgPath);
+}
+
 module.exports = {
     fileUpload,
-    updateImg
+    updateImg,
+    showImg
 }
